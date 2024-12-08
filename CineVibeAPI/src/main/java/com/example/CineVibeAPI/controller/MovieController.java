@@ -1,7 +1,9 @@
-package com.example.CineVibe.controller;
+package com.example.CineVibeAPI.controller;
 
-import com.example.CineVibe.model.Movie;
-import com.example.CineVibe.service.MovieService;
+import com.example.CineVibeAPI.dto.MovieDto;
+import com.example.CineVibeAPI.model.Movie;
+import com.example.CineVibeAPI.service.MovieService;
+import com.example.CineVibeAPI.repository.RatingRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/movies")
 public class MovieController {
+
     private final MovieService movieService;
 
     public MovieController(MovieService movieService) {
@@ -16,17 +19,28 @@ public class MovieController {
     }
 
     @GetMapping
-    public List<Movie> getAllMovies() {
+    public List<MovieDto> getAllMovies() {
         return movieService.getAllMovies();
     }
 
-    @PostMapping
-    public Movie createMovie(@RequestBody Movie movie) {
-        return movieService.saveMovie(movie);
+    @GetMapping("/{id}")
+    public MovieDto getMovieById(@PathVariable Long id) {
+        return movieService.getMovieById(id);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteMovie(@PathVariable Long id) {
-        movieService.deleteMovie(id);
+    @PostMapping
+    public MovieDto addMovie(@RequestBody MovieDto movieDto) {
+        return movieService.addMovie(movieDto);
     }
+
+    @PutMapping("/{id}")
+    public MovieDto updateMovie(@PathVariable Long id, @RequestBody MovieDto movieDto) {
+        return movieService.updateMovie(id, movieDto);
+    }
+
+    @PostMapping("/{id}/rate")
+    public void rateMovie(@PathVariable Long id, @RequestParam Long userId, @RequestParam int score) {
+        movieService.rateMovie(id, userId, score);
+    }
+
 }
