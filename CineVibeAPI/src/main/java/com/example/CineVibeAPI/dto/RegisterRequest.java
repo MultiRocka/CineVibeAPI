@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
+
     @NotBlank
     private String username;
 
@@ -16,4 +17,10 @@ public class RegisterRequest {
     @NotBlank
     private String password;
 
+    public RegisterRequest(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
 }
+

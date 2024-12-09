@@ -1,5 +1,7 @@
 package com.example.CineVibeAPI.service;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -34,9 +36,22 @@ public class JwtService {
                 .compact();
     }
 
+    private static final long CLOCK_SKEW = 5 * 1000;  // Allow 5 seconds of clock skew
+
     public boolean validateToken(String token, String username) {
-        String extractedUsername = extractUsername(token);
-        return username.equals(extractedUsername) && !isTokenExpired(token);
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .setClock(() -> new Date(System.currentTimeMillis() + CLOCK_SKEW)) // Allow clock skew
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+
+            String extractedUsername = claims.getSubject();
+            return (extractedUsername.equals(username) && !claims.getExpiration().before(new Date()));
+        } catch (JwtException e) {
+            return false;
+        }
     }
 
     private boolean isTokenExpired(String token) {
@@ -47,7 +62,7 @@ public class JwtService {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getExpiration();
     }
 
-    private String extractUsername(String token) {
+    public String extractUsername(String token) {
         return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
     }
 }
