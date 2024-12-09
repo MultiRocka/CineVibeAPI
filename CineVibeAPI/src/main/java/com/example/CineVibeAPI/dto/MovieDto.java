@@ -14,7 +14,13 @@ public class MovieDto {
     private int ratingCount;  // Liczba ocen
 
     public MovieDto() {
-        // Bezargumentowy konstruktor
+    }
+
+    public MovieDto(Long id, String title, String description, int releaseYear) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.releaseYear = releaseYear;
     }
 
     public MovieDto(Movie movie, int ratingCount, double rating) {

@@ -40,14 +40,16 @@ public class AuthController {
 
         // Sprawdzamy, czy login jest emailem czy nazwą użytkownika
         User user = userRepository.findByUsernameOrEmail(login, login)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid username or email"));
+                .orElse(null);
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("Invalid username or password");
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            return ResponseEntity.badRequest().body("Invalid username or password");
         }
 
         String token = jwtService.generateToken(user.getUsername());
         return ResponseEntity.ok(token);
     }
+
+
 
 }

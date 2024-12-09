@@ -93,13 +93,13 @@ public class MovieService {
         if (existingRating.isPresent()) {
             Rating rating = existingRating.get();
             rating.setScore(score); // Aktualizujemy ocenę
-            ratingRepository.save(rating);
+            ratingRepository.save(rating); // Zapisujemy tylko ocenę
         } else {
             Rating rating = new Rating();
             rating.setMovie(movie);
             rating.setUser(user);
             rating.setScore(score);
-            ratingRepository.save(rating);
+            ratingRepository.save(rating); // Zapisujemy nową ocenę
         }
 
         // Po dodaniu/aktualizacji oceny, obliczamy średnią ocenę
@@ -107,10 +107,15 @@ public class MovieService {
     }
 
     private void updateMovieRating(Movie movie) {
+        // Obliczamy średnią ocenę
         double averageRating = ratingRepository.findAverageRatingByMovie(movie.getId())
                 .orElse(0.0);
-        movie.setRating(averageRating);
-        movieRepository.save(movie);
+
+        // Jeśli średnia się zmieniła, zapisujemy film
+        if (movie.getRating() != averageRating) {
+            movie.setRating(averageRating);
+            movieRepository.save(movie); // Zapisujemy tylko jeśli rating się zmienił
+        }
     }
 
 

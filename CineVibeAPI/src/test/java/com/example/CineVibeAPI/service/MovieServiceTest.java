@@ -8,6 +8,7 @@ import com.example.CineVibeAPI.repository.RatingRepository;
 import com.example.CineVibeAPI.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -182,4 +183,5 @@ public class MovieServiceTest {
         // Then
         verify(ratingRepository).save(any(Rating.class)); // Check that save is called
     }
+
 }
