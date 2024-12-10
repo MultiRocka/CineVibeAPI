@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import {AuthContext, AuthProvider} from "../context/AuthContext";
+import '../css/Navbar.css';
 const Navbar = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const { isLoggedIn, logout } = useContext(AuthContext);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        setIsLoggedIn(!!token);  // Sprawdzamy, czy token jest w localStorage
-    }, []);
-
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Usuwamy token z localStorage
-        setIsLoggedIn(false);  // Ustawiamy stan na false
-        navigate('/'); // Przekierowujemy na stronę główną
+        logout();
+        navigate('/'); // Przekierowanie na stronę główną
     };
 
     return (

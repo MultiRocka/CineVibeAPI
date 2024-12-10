@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from '../axios';  // Upewnij się, że ten plik axios jest poprawnie skonfigurowany
+import axios from '../axios';
 import { useNavigate } from 'react-router-dom';
+import '../css/AccountPage.css';
 
 const AccountPage = () => {
     const [user, setUser] = useState(null);
@@ -40,22 +41,35 @@ const AccountPage = () => {
     // Funkcja do zmiany hasła
     const handlePasswordChange = async (e) => {
         e.preventDefault();
-        if (newPassword) {
-            try {
-                const token = localStorage.getItem('token');
-                await axios.put('/user/password', { password: newPassword }, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+
+        // Sprawdzenie, czy nowe hasło jest wystarczająco długie
+        if (!newPassword || newPassword.length < 8) {
+            alert("Password must be at least 8 characters long.");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem('token');
+            console.log("JWT Token being sent:", token);
+            // Wysyłamy PUT request z odpowiednią strukturą
+            const response = await axios.put('/user/password', { password: newPassword }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+
+            });
+
+            console.log("Received JWT Token:", token);
+            if (response.status === 200) {
                 alert("Password updated successfully!");
                 setIsEditing(false); // Po zapisaniu hasła kończymy edycję
-            } catch (error) {
-                alert("Error updating password");
-                console.error(error);
+                setNewPassword(''); // Resetowanie hasła po zapisaniu
             }
-        } else {
-            alert("Please enter a new password.");
+        } catch (error) {
+            // Obsługa błędów z backendu
+            const errorMessage = error.response ? error.response.data : "Error updating password";
+            alert(errorMessage);
+            console.error("Error updating password:", errorMessage);
         }
     };
 
