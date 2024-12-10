@@ -13,8 +13,6 @@ public class UserDto {
         this.email = email;
     }
 
-    // Gettery i settery
-
     public void setUsername(String username) {
         this.username = username;
     }

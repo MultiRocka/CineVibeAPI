@@ -42,17 +42,21 @@ public class JwtService {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(secretKey)
-                    .setClock(() -> new Date(System.currentTimeMillis() + CLOCK_SKEW)) // Allow clock skew
+                    .setClock(() -> new Date(System.currentTimeMillis() + CLOCK_SKEW))
                     .build()
                     .parseClaimsJws(token)
                     .getBody();
 
             String extractedUsername = claims.getSubject();
+            System.out.println("Extracted username: " + extractedUsername); // Logowanie nazwy użytkownika
             return (extractedUsername.equals(username) && !claims.getExpiration().before(new Date()));
         } catch (JwtException e) {
+            System.err.println("Error validating token: " + e.getMessage()); // Logowanie błędów
             return false;
         }
     }
+
+
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
@@ -63,6 +67,20 @@ public class JwtService {
     }
 
     public String extractUsername(String token) {
-        return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody().getSubject();
+        try {
+            System.out.println("Received JWT Token: " + token); // Logowanie tokenu
+            return Jwts.parserBuilder()
+                    .setSigningKey(secretKey)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (JwtException e) {
+            System.err.println("Invalid JWT token: " + e.getMessage()); // Logowanie błędu
+            throw new RuntimeException("Invalid JWT token", e);
+        }
     }
+
+
+
 }

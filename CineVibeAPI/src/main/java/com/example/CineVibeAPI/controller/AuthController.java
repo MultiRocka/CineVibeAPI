@@ -1,14 +1,19 @@
 package com.example.CineVibeAPI.controller;
 
-import com.example.CineVibeAPI.dto.RegisterRequest;
 import com.example.CineVibeAPI.model.User;
+import com.example.CineVibeAPI.repository.UserRepository;
 import com.example.CineVibeAPI.service.AuthService;
-import jakarta.validation.Valid;
+import com.example.CineVibeAPI.service.JwtService;
+import com.example.CineVibeAPI.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
-import com.example.CineVibeAPI.repository.*;
-import com.example.CineVibeAPI.service.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Map;
 
 @RestController
@@ -19,6 +24,9 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
+    @Autowired
+    private UserService userService;
+
     public AuthController(AuthService authService, UserRepository userRepository,
                           PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.authService = authService;
@@ -28,10 +36,15 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody RegisterRequest registerRequest) {
-        authService.registerUser(registerRequest);
-        return ResponseEntity.ok("User registered successfully");
+    public ResponseEntity<String> register(@RequestBody User user) {
+        try {
+            userService.registerUser(user);
+            return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody Map<String, String> loginRequest) {

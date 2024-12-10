@@ -1,9 +1,7 @@
 package com.example.CineVibeAPI.controller;
 
 import com.example.CineVibeAPI.dto.MovieDto;
-import com.example.CineVibeAPI.model.Movie;
 import com.example.CineVibeAPI.service.MovieService;
-import com.example.CineVibeAPI.repository.RatingRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +35,10 @@ public class MovieController {
     public MovieDto updateMovie(@PathVariable Long id, @RequestBody MovieDto movieDto) {
         return movieService.updateMovie(id, movieDto);
     }
-
+    @DeleteMapping("/{id}")
+    public void deleteMovie(@PathVariable Long id) {
+        movieService.deleteMovie(id);
+    }
     @PostMapping("/{id}/rate")
     public void rateMovie(@PathVariable Long id, @RequestParam Long userId, @RequestParam int score) {
         movieService.rateMovie(id, userId, score);
